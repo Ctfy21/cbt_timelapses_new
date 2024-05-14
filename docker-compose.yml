@@ -1,0 +1,10 @@
+services:
+  web-backend:
+    build: ./cbt_timelapses_backend
+    ports:
+      - "5000:5000"
+    develop:
+      watch:
+        - action: rebuild
+          path: .
+          target: /

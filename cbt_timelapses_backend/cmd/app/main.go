@@ -4,9 +4,12 @@ import (
 	order "cbt_timelapses_backend/m/v2/internal/instances"
 	"cbt_timelapses_backend/m/v2/internal/scripts"
 	"cbt_timelapses_backend/m/v2/internal/ws"
+	"context"
 	"log"
 	"time"
 )
+
+var ctx = context.Background()
 
 func main() {
 
@@ -20,6 +23,6 @@ func main() {
 
 func messageHandler(message []byte, server *ws.Server) {
 	log.Println(string(message))
-	newOrder := order.CreateOrder("sb1", "centertable", "2024-05-10_00-00-00", "2024-05-11_00-00-00", order.Status_waiting)
+	newOrder, _ := order.FromJSON(message)
 	go scripts.CreateFakeTimelapse(newOrder, server)
 }

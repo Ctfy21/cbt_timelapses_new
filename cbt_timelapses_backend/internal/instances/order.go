@@ -6,12 +6,6 @@ import (
 	"log"
 )
 
-const (
-	Status_ok      int = 200
-	Status_waiting int = 300
-	Status_error   int = 400
-)
-
 type Order struct {
 	Room      string `json:"Room"`
 	Camera    string `json:"Camera"`
@@ -32,21 +26,21 @@ func CreateOrder(room, camera, startDate, endDate string, status int) *Order {
 	return &order
 }
 
-func (order *Order) ToJSON() []byte {
-	j, err := json.Marshal(order)
+func (newOrder *Order) ToJSON() ([]byte, error) {
+	j, err := json.Marshal(newOrder)
 	if err != nil {
 		log.Fatalf("Error occured during marshaling. Error: %s", err.Error())
 	}
 	fmt.Printf("JSON: %s\n", string(j))
-	return j
+	return j, err
 }
 
-func FromJSON(jsonValue []byte) Order {
+func FromJSON(jsonValue []byte) (*Order, error) {
 	var newOrder Order
 	err := json.Unmarshal(jsonValue, &newOrder)
 	if err != nil {
 		log.Fatalf("Error occured during unmarshaling. Error: %s", err.Error())
 	}
 	fmt.Printf("Order struct: %s\n", newOrder)
-	return newOrder
+	return &newOrder, err
 }

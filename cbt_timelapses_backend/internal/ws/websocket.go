@@ -1,7 +1,9 @@
 package ws
 
 import (
+	"cbt_timelapses_backend/m/v2/internal/database"
 	"github.com/gorilla/websocket"
+	"github.com/redis/go-redis/v9"
 	"net/http"
 )
 
@@ -14,12 +16,17 @@ var upgrader = websocket.Upgrader{
 type Server struct {
 	clients       map[*websocket.Conn]bool
 	handleMessage func(message []byte, server *Server) // хандлер новых сообщений
+	RedisDB       *redis.Client
 }
 
 func CreateServer(handleMessage func(message []byte, server *Server)) *Server {
+
+	rdb := database.StartClient()
+
 	server := Server{
 		make(map[*websocket.Conn]bool),
 		handleMessage,
+		rdb,
 	}
 
 	http.HandleFunc("/ws", server.echo)

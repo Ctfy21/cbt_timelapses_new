@@ -22,17 +22,22 @@ func CreateTimelapse(order *order.Order, server *ws.Server) {
 		log.Println(err)
 	}
 
-	server.WriteMessageAll(order.ToJSON())
+	val, _ := order.ToJSON()
+
+	server.WriteMessageAll(val)
 
 }
 
 func CreateFakeTimelapse(order *order.Order, server *ws.Server) {
 	err := exec.Command("ping", "google.com").Run()
+	order.Status = configs.STATUS_OK
+	val, _ := order.ToJSON()
 	if err != nil {
 		log.Println(err)
 		server.WriteMessageAll([]byte("Error"))
 		return
 	}
-	server.WriteMessageAll(order.ToJSON())
+
+	server.WriteMessageAll(val)
 
 }

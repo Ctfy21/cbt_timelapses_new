@@ -1,6 +1,6 @@
 FROM golang:latest
 
-COPY . .
+COPY .. .
 
 RUN go mod download
 RUN go build -v -o main ./cmd/app/

@@ -1,28 +1,26 @@
 package main
 
 import (
-	"fmt"
-	"os/exec"
+	order "cbt_timelapses_backend/m/v2/internal/instances"
+	"cbt_timelapses_backend/m/v2/internal/scripts"
+	"cbt_timelapses_backend/m/v2/internal/ws"
+	"log"
+	"time"
 )
 
 func main() {
 
-	ch := make(chan string)
+	server := ws.CreateServer(messageHandler)
 
-	go getList(ch)
-
-	fmt.Println("After goroutine!")
-
-	fmt.Println(<-ch)
-
+	for {
+		server.WriteMessageAll([]byte("Hello"))
+		time.Sleep(1 * time.Second)
+	}
 }
 
-func getList(ch chan string) {
-	out, err := exec.Command("echo", "Hello World!").Output()
-
-	if err != nil {
-		panic(err)
-	}
-
-	ch <- string(out)
+func messageHandler(message []byte, server *ws.Server) {
+	log.Println(string(message))
+	newOrder := order.CreateOrder("sb1", "centertable", "2024-05-10_00-00-00", "2024-05-11_00-00-00", order.Status_waiting)
+	server.WriteMessageAll(newOrder.ToJSON())
+	go scripts.CreateFakeTimelapse(newOrder, server)
 }

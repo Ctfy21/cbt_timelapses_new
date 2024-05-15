@@ -1,0 +1,25 @@
+<html>
+<head>
+</head>
+<body>
+<h1>WebSocket test</h1>
+<!-- 1 -->
+<div id="entry"></div>
+<script type="text/javascript">
+    var long = document.getElementById("long");
+    var lat = document.getElementById("lat");
+
+    // 2
+    var socket = new WebSocket("ws://localhost:5000/ws")
+
+    socket.onopen = () => {
+        console.log("Successfully connected!")
+        socket.send('create timelapse')
+    }
+    socket.onmessage = (event) => {
+        console.log(`Получены данные с WebSocket: ${event.data}`)
+    }
+
+</script>
+</body>
+</html>

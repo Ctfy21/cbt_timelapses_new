@@ -6,5 +6,5 @@ services:
     develop:
       watch:
         - action: rebuild
-          path: .
-          target: /
+          path: ./cmd/app
+          target: /cmd/app

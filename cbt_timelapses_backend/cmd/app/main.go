@@ -21,6 +21,5 @@ func main() {
 func messageHandler(message []byte, server *ws.Server) {
 	log.Println(string(message))
 	newOrder := order.CreateOrder("sb1", "centertable", "2024-05-10_00-00-00", "2024-05-11_00-00-00", order.Status_waiting)
-	server.WriteMessageAll(newOrder.ToJSON())
 	go scripts.CreateFakeTimelapse(newOrder, server)
 }

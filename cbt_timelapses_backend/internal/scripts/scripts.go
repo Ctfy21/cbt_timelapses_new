@@ -4,13 +4,11 @@ import (
 	"cbt_timelapses_backend/m/v2/configs"
 	order "cbt_timelapses_backend/m/v2/internal/instances"
 	"cbt_timelapses_backend/m/v2/internal/ws"
-	"fmt"
 	"log"
 	"os/exec"
-	"time"
 )
 
-func CreateTimelapse(order *order.Order) {
+func CreateTimelapse(order *order.Order, server *ws.Server) {
 	err := exec.Command(configs.DIRECTORY_FOLDER_SCRIPT,
 		"--dir",
 		configs.SCREENSHOTS_FOLDER+"/"+order.Room+"/"+order.Camera,
@@ -20,16 +18,18 @@ func CreateTimelapse(order *order.Order) {
 		order.EndDate+"_00-00-00").Run()
 
 	if err != nil {
-		log.Fatal(err)
+		server.WriteMessageAll([]byte("Error"))
+		log.Println(err)
 	}
+
+	server.WriteMessageAll(order.ToJSON())
 
 }
 
 func CreateFakeTimelapse(order *order.Order, server *ws.Server) {
-	err := exec.Command("ls", "-l").Run()
-	time.Sleep(5 * time.Second)
+	err := exec.Command("ping", "google.com").Run()
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		server.WriteMessageAll([]byte("Error"))
 		return
 	}

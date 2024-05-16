@@ -14,19 +14,15 @@ type Order struct {
 	Status    int    `json:"Status"`
 }
 
-func CreateOrder(room, camera, startDate, endDate string, status int) *Order {
-	order := Order{
-		Room:      room,
-		Camera:    camera,
-		StartDate: startDate,
-		EndDate:   endDate,
-		Status:    status,
-	}
-
-	return &order
+type OrdersJSONType struct {
+	OrdersJSON []string `json:"Orders"`
 }
 
-func (newOrder *Order) ToJSON() ([]byte, error) {
+type OrderJSONType struct {
+	OrderJSON Order `json:"Order"`
+}
+
+func (newOrder *OrderJSONType) ToJSON() ([]byte, error) {
 	j, err := json.Marshal(newOrder)
 	if err != nil {
 		log.Fatalf("Error occured during marshaling. Error: %s", err.Error())
@@ -35,12 +31,12 @@ func (newOrder *Order) ToJSON() ([]byte, error) {
 	return j, err
 }
 
-func FromJSON(jsonValue []byte) (*Order, error) {
-	var newOrder Order
+func FromJSON(jsonValue []byte) (*OrderJSONType, error) {
+	var newOrder OrderJSONType
 	err := json.Unmarshal(jsonValue, &newOrder)
 	if err != nil {
 		log.Fatalf("Error occured during unmarshaling. Error: %s", err.Error())
 	}
-	fmt.Printf("Order struct: %s\n", newOrder)
+	fmt.Printf("Order struct: %+v\n", newOrder)
 	return &newOrder, err
 }

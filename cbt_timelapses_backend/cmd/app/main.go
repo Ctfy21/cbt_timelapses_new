@@ -1,28 +1,37 @@
 package main
 
 import (
+	"cbt_timelapses_backend/m/v2/configs"
+	"cbt_timelapses_backend/m/v2/internal/database"
 	order "cbt_timelapses_backend/m/v2/internal/instances"
 	"cbt_timelapses_backend/m/v2/internal/scripts"
 	"cbt_timelapses_backend/m/v2/internal/ws"
-	"context"
 	"log"
-	"time"
+	"strconv"
 )
 
-var ctx = context.Background()
+var exit = make(chan bool)
 
 func main() {
 
-	server := ws.CreateServer(messageHandler)
+	ws.CreateServer(messageHandler)
+	var _ = <-exit
 
-	for {
-		server.WriteMessageAll([]byte("Hello"))
-		time.Sleep(1 * time.Second)
-	}
 }
 
 func messageHandler(message []byte, server *ws.Server) {
 	log.Println(string(message))
-	newOrder, _ := order.FromJSON(message)
-	go scripts.CreateFakeTimelapse(newOrder, server)
+	newOrder, err := order.FromJSON(message)
+	if err != nil || newOrder.OrderJSON.Status != configs.STATUS_WAITING {
+		log.Println(err)
+		return
+	}
+	newID := postOrderToDB(message, server)
+	go scripts.CreateFakeTimelapse(newOrder, server, newID)
+}
+
+func postOrderToDB(message []byte, server *ws.Server) uint64 {
+	newID := database.GetIncrId(server.RedisDB, "OrderID")
+	database.SetJSONData(server.RedisDB, "Order:"+strconv.FormatUint(newID, 10), message)
+	return newID
 }

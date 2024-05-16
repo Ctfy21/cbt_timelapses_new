@@ -23,6 +23,11 @@ func CreateServer(handleMessage func(message []byte, server *Server)) *Server {
 
 	rdb := database.StartClient()
 
+	//err := rdb.FlushDB(context.Background()).Err()
+	//if err != nil {
+	//	panic(err)
+	//}
+
 	server := Server{
 		make(map[*websocket.Conn]bool),
 		handleMessage,
@@ -43,7 +48,9 @@ func (server *Server) echo(w http.ResponseWriter, r *http.Request) {
 
 	server.clients[connection] = true // Сохраняем соединение, используя его как ключ
 
-	server.WriteMessage([]byte("database orders data"), connection)
+	json := database.GetJSONArrayValuesFromKeyPattern(server.RedisDB, "Order:*")
+
+	server.WriteMessage(json, connection)
 
 	defer delete(server.clients, connection) // Удаляем соединение
 

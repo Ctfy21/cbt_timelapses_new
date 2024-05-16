@@ -3,21 +3,20 @@
 </head>
 <body>
 <h1>WebSocket test</h1>
-<!-- 1 -->
 <div id="entry"></div>
 <script type="text/javascript">
-    var long = document.getElementById("long");
-    var lat = document.getElementById("lat");
 
-    // 2
     var socket = new WebSocket("ws://localhost:5000/ws")
 
     socket.onopen = () => {
         console.log("Successfully connected!")
-        socket.send('create timelapse')
+        socket.send('{"Order":{"Room":"sb1","Camera":"centertable","StartDate":"2024-05-14_00-00-00","EndDate":"2024-05-15_00-00-00","Status":300}}')
     }
     socket.onmessage = (event) => {
-        console.log(`Получены данные с WebSocket: ${event.data}`)
+        let arr = []
+        const obj = JSON.parse(event.data)
+        console.log(event.data)
+        const key = Object.keys(obj)[0]
     }
 
 </script>

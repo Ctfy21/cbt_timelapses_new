@@ -2,10 +2,12 @@ package scripts
 
 import (
 	"cbt_timelapses_backend/m/v2/configs"
+	"cbt_timelapses_backend/m/v2/internal/database"
 	order "cbt_timelapses_backend/m/v2/internal/instances"
 	"cbt_timelapses_backend/m/v2/internal/ws"
 	"log"
 	"os/exec"
+	"strconv"
 )
 
 func CreateTimelapse(order *order.Order, server *ws.Server) {
@@ -22,22 +24,24 @@ func CreateTimelapse(order *order.Order, server *ws.Server) {
 		log.Println(err)
 	}
 
-	val, _ := order.ToJSON()
-
-	server.WriteMessageAll(val)
-
 }
 
-func CreateFakeTimelapse(order *order.Order, server *ws.Server) {
+func CreateFakeTimelapse(order *order.OrderJSONType, server *ws.Server, newID uint64) {
+
 	err := exec.Command("ping", "google.com").Run()
-	order.Status = configs.STATUS_OK
-	val, _ := order.ToJSON()
+	order.OrderJSON.Status = configs.STATUS_OK
 	if err != nil {
+		order.OrderJSON.Status = configs.STATUS_ERROR
 		log.Println(err)
-		server.WriteMessageAll([]byte("Error"))
+	}
+
+	val, err := order.ToJSON()
+	if err != nil {
+		log.Println("Error during JSON Order marshalling: ", err)
 		return
 	}
 
+	database.SetJSONData(server.RedisDB, "Order:"+strconv.FormatUint(newID, 10), val)
 	server.WriteMessageAll(val)
 
 }

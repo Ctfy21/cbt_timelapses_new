@@ -10,13 +10,20 @@
 
     socket.onopen = () => {
         console.log("Successfully connected!")
-        socket.send('{"Order":{"Room":"sb1","Camera":"centertable","StartDate":"2024-05-14_00-00-00","EndDate":"2024-05-15_00-00-00","Status":300}}')
+        // socket.send('{"Order":{"Room":"sb1","Camera":"centertable","StartDate":"2024-05-15_00-00-00","EndDate":"2024-05-16_00-00-00","Status":300}}')
     }
     socket.onmessage = (event) => {
-        let arr = []
-        const obj = JSON.parse(event.data)
-        console.log(event.data)
-        const key = Object.keys(obj)[0]
+        let jsonVal = JSON.parse(event.data)
+        for (const [key, value] of Object.entries(jsonVal)){
+            switch (key){
+                case "Orders":
+                    for(const arrayVal of value){
+                        let order = JSON.parse(arrayVal)
+                        console.log(order["Order"])
+                    }
+                    break
+            }
+        }
     }
 
 </script>

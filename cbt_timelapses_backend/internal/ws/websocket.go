@@ -1,9 +1,11 @@
 package ws
 
 import (
+	"cbt_timelapses_backend/m/v2/configs"
 	"cbt_timelapses_backend/m/v2/internal/database"
 	"github.com/gorilla/websocket"
 	"github.com/redis/go-redis/v9"
+	"log"
 	"net/http"
 )
 
@@ -23,10 +25,7 @@ func CreateServer(handleMessage func(message []byte, server *Server)) *Server {
 
 	rdb := database.StartClient()
 
-	//err := rdb.FlushDB(context.Background()).Err()
-	//if err != nil {
-	//	panic(err)
-	//}
+	//database.FlushDB(rdb)
 
 	server := Server{
 		make(map[*websocket.Conn]bool),
@@ -35,9 +34,11 @@ func CreateServer(handleMessage func(message []byte, server *Server)) *Server {
 	}
 
 	http.HandleFunc("/ws", server.echo)
-	http.HandleFunc("/", homePage) // delete after add frontend
+	//http.HandleFunc("/", homePage) // delete after add frontend
 
-	go http.ListenAndServe(":5000", nil) // Уводим http сервер в горутину
+	go http.ListenAndServe(configs.PORT_SERVER, nil) // Уводим http сервер в горутину
+
+	log.Println("Start Server at port " + configs.PORT_SERVER)
 
 	return &server
 }
@@ -77,6 +78,6 @@ func (server *Server) WriteMessage(message []byte, conn *websocket.Conn) {
 
 // delete after add frontend
 
-func homePage(response http.ResponseWriter, request *http.Request) {
-	http.ServeFile(response, request, "static/index.html")
-}
+//func homePage(response http.ResponseWriter, request *http.Request) {
+//	http.ServeFile(response, request, "static/index.html")
+//}

@@ -63,3 +63,10 @@ func GetJSONArrayValuesFromKeyPattern(rc *redis.Client, key string) []byte {
 
 	return j
 }
+
+func FlushDB(rdb *redis.Client) {
+	err := rdb.FlushDB(context.Background()).Err()
+	if err != nil {
+		panic(err)
+	}
+}

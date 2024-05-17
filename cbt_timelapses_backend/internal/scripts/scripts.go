@@ -26,7 +26,7 @@ func CreateTimelapse(order *order.Order, server *ws.Server) {
 
 }
 
-func CreateFakeTimelapse(order *order.OrderJSONType, server *ws.Server, newID uint64) {
+func CreateFakeTimelapse(order *order.OrderJSONType, server *ws.Server, newID int) {
 
 	err := exec.Command("ping", "google.com").Run()
 	order.OrderJSON.Status = configs.STATUS_OK
@@ -41,7 +41,7 @@ func CreateFakeTimelapse(order *order.OrderJSONType, server *ws.Server, newID ui
 		return
 	}
 
-	database.SetJSONData(server.RedisDB, "Order:"+strconv.FormatUint(newID, 10), val)
+	database.SetJSONData(server.RedisDB, "Order:"+strconv.Itoa(newID), val)
 	server.WriteMessageAll(val)
 
 }

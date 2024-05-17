@@ -7,6 +7,7 @@ import (
 )
 
 type Order struct {
+	Id        int    `json:"Id,omitempty"`
 	Room      string `json:"Room"`
 	Camera    string `json:"Camera"`
 	StartDate string `json:"StartDate"`

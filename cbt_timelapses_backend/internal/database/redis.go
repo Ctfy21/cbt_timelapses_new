@@ -34,9 +34,12 @@ func GetJSONData(rc *redis.Client, key string) []byte {
 	return val
 }
 
-func GetIncrId(rc *redis.Client, key string) uint64 {
-	val, _ := rc.Get(context.Background(), key).Uint64()
+func GetIncrId(rc *redis.Client, key string) int {
 	rc.Incr(context.Background(), key)
+	val, err := rc.Get(context.Background(), key).Int()
+	if err != nil {
+		log.Println("Redis error GetIncrId:", err)
+	}
 	log.Println("Redis get incremented ID val:", val)
 	return val
 }

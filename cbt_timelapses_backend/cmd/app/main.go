@@ -26,12 +26,23 @@ func messageHandler(message []byte, server *ws.Server) {
 		log.Println(err)
 		return
 	}
-	newID := postOrderToDB(message, server)
+	newID, err := postOrderToDB(newOrder, server)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 	go scripts.CreateFakeTimelapse(newOrder, server, newID)
 }
 
-func postOrderToDB(message []byte, server *ws.Server) uint64 {
+func postOrderToDB(order *order.OrderJSONType, server *ws.Server) (int, error) {
 	newID := database.GetIncrId(server.RedisDB, "OrderID")
-	database.SetJSONData(server.RedisDB, "Order:"+strconv.FormatUint(newID, 10), message)
-	return newID
+	order.OrderJSON.Id = newID
+	val, err := order.ToJSON()
+	if err != nil {
+		return 0, err
+	}
+	database.SetJSONData(server.RedisDB, "Order:"+strconv.Itoa(newID), val)
+	json := database.GetJSONArrayValuesFromKeyPattern(server.RedisDB, "Order:*")
+	server.WriteMessageAll(json)
+	return newID, nil
 }

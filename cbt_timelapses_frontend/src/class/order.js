@@ -35,6 +35,7 @@ export class Order {
         order.startDate = new Date(json["StartDate"].split("_")[0]);
         order.endDate = new Date(json["EndDate"].split("_")[0]);
         order.status = json["Status"];
+        order.downloaderValue = ''
         return order;
     }
 

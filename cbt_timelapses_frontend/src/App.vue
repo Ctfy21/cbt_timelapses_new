@@ -1,17 +1,48 @@
 <script setup>
 
 import { useOrderStore } from "@/orderStore";
-import { ref } from "vue";
-import {downloadImage} from "@/downloader";
+import {ref, toRaw} from "vue";
+import axios from "axios";
 
-const store = useOrderStore();
 
 const roomValue = ref('')
 const cameraValue = ref('')
 const startDateValue = ref('')
 const endDateValue = ref('')
 
+const store = useOrderStore();
+
 store.bindEvents()
+
+function downloadImage(order){
+  console.log(order)
+  const existingOrderIndex = store.orders.findIndex((temp) => {
+    return temp.id === order.id;
+  });
+  const url = `http://192.168.42.119:5000/download/${order.room}/${order.camera}/timelapses/output_${order.startDate.toISOString().slice(0,10)}_00-00-00_to_${order.endDate.toISOString().slice(0,10)}_00-00-00.mp4`
+  axios({
+    url: url,
+    method: 'GET',
+    responseType: 'blob',
+    onDownloadProgress: function (progressEvent){
+      console.log(((progressEvent.loaded / progressEvent.total) * 100).toFixed() + "%");
+      store.orders[existingOrderIndex].downloaderValue = ((progressEvent.loaded / progressEvent.total) * 100).toFixed() + "%"
+    }
+  }).then((response) => {
+    store.orders[existingOrderIndex].downloaderValue = ''
+    // create file link in browser's memory
+    const href = URL.createObjectURL(response.data);
+    // create "a" HTML element with href to file & click
+    const link = document.createElement('a');
+    link.href = href;
+    link.setAttribute('download', `timelapse_${order.room}_${order.camera}_${order.startDate.toISOString().slice(0,10)}_${order.endDate.toISOString().slice(0,10)}`); //or any other extension
+    document.body.appendChild(link);
+    link.click();
+    // clean up "a" element & remove ObjectURL
+    document.body.removeChild(link);
+    URL.revokeObjectURL(href);
+  });
+}
 
 </script>
 
@@ -81,10 +112,13 @@ store.bindEvents()
             <BIconCheckCircleFill class="text-success" v-else-if="order.status === 200"></BIconCheckCircleFill>
             <BIconXCircleFill class="text-danger" v-else></BIconXCircleFill>
           </div>
-          <div class="p-1 d-flex col border align-items-center justify-content-center">
+          <div v-if="order.downloaderValue === ''" class="p-1 d-flex col border align-items-center justify-content-center">
             <button v-if="order.status === 200">
-              <BIconDownload @click="downloadImage(order.room, order.camera, order.startDate, order.endDate)"> Скачать </BIconDownload>
+              <BIconDownload @click="downloadImage(toRaw(order))"> Скачать </BIconDownload>
             </button>
+          </div>
+          <div v-else class="p-1 d-flex col border align-items-center justify-content-center">
+            <label>{{ order.downloaderValue }}</label>
           </div>
         </li>
       </ul>

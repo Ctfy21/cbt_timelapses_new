@@ -2,7 +2,6 @@ import { defineStore } from "pinia";
 import { Order } from "@/class/order";
 import {socket} from "@/socket";
 
-
 export const useOrderStore = defineStore("orders",{
     state: () => ({
         orders: [],
@@ -45,6 +44,6 @@ export const useOrderStore = defineStore("orders",{
             if(socket.readyState === WebSocket.OPEN){
                 socket.send(Order.serialize(new_order))
             }
-        }
+        },
     }
 })

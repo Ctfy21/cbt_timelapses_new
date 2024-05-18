@@ -5,6 +5,7 @@ import (
 	"cbt_timelapses_backend/m/v2/internal/database"
 	"github.com/gorilla/websocket"
 	"github.com/redis/go-redis/v9"
+	cors "github.com/rs/cors"
 	"log"
 	"net/http"
 )
@@ -34,7 +35,10 @@ func CreateServer(handleMessage func(message []byte, server *Server)) *Server {
 	}
 
 	http.HandleFunc("/ws", server.echo)
-	//http.HandleFunc("/", homePage) // delete after add frontend
+
+	fileServer := http.FileServer(http.Dir(configs.SCREENSHOTS_FOLDER))
+	fileServerWithCors := cors.Default().Handler(fileServer)
+	http.Handle("/download/", http.StripPrefix("/download/", fileServerWithCors))
 
 	go http.ListenAndServe(configs.PORT_SERVER, nil) // Уводим http сервер в горутину
 
@@ -75,9 +79,3 @@ func (server *Server) WriteMessageAll(message []byte) {
 func (server *Server) WriteMessage(message []byte, conn *websocket.Conn) {
 	conn.WriteMessage(websocket.TextMessage, message)
 }
-
-// delete after add frontend
-
-//func homePage(response http.ResponseWriter, request *http.Request) {
-//	http.ServeFile(response, request, "static/index.html")
-//}

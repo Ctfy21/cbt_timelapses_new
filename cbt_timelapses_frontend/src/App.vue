@@ -2,7 +2,7 @@
 
 import { useOrderStore } from "@/orderStore";
 import { ref } from "vue";
-
+import {downloadImage} from "@/downloader";
 
 const store = useOrderStore();
 
@@ -35,7 +35,7 @@ store.bindEvents()
         <input type="date" class="form-control" v-model="endDateValue">
       </div>
       <div class="d-flex justify-content-center">
-        <button type="submit" class="btn btn-primary" > Загрузить </button>
+        <button type="submit" class="btn btn-primary" > Создать </button>
       </div>
     </form>
 
@@ -58,6 +58,9 @@ store.bindEvents()
           <div class="p-1 d-flex col align-items-center justify-content-center">
             <h5 class="h5">Статус</h5>
           </div>
+          <div class="p-1 d-flex col align-items-center justify-content-center">
+            <h5 class="h5">Скачать</h5>
+          </div>
         </div>
       <ul>
         <li class="rounded row gy-4 m-1" v-for="order in store.orders" :key="order.id">
@@ -68,15 +71,20 @@ store.bindEvents()
             <label class="">{{ order.camera }}</label>
           </div>
           <div class="p-1 d-flex col border align-items-center justify-content-center">
-            <label>{{ order.startDate.getDate() }}.{{ order.startDate.getMonth() }}.{{ order.startDate.getFullYear() }}</label>
+            <label>{{ order.startDate.getDate() }}.{{ order.startDate.getMonth()+1 }}.{{ order.startDate.getFullYear() }}</label>
           </div>
           <div class="p-1 d-flex col border align-items-center justify-content-center">
-            <label>{{ order.endDate.getDate() }}.{{ order.endDate.getMonth() }}.{{ order.endDate.getFullYear() }}</label>
+            <label>{{ order.endDate.getDate() }}.{{ order.endDate.getMonth()+1 }}.{{ order.endDate.getFullYear() }}</label>
           </div>
           <div class="p-1 d-flex col border align-items-center justify-content-center">
             <div class="spinner-border text-warning" v-if="order.status === 300"></div>
             <BIconCheckCircleFill class="text-success" v-else-if="order.status === 200"></BIconCheckCircleFill>
             <BIconXCircleFill class="text-danger" v-else></BIconXCircleFill>
+          </div>
+          <div class="p-1 d-flex col border align-items-center justify-content-center">
+            <button v-if="order.status === 200">
+              <BIconDownload @click="downloadImage(order.room, order.camera, order.startDate, order.endDate)"> Скачать </BIconDownload>
+            </button>
           </div>
         </li>
       </ul>

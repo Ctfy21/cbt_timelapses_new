@@ -31,7 +31,7 @@ func messageHandler(message []byte, server *ws.Server) {
 		log.Println(err)
 		return
 	}
-	go scripts.CreateFakeTimelapse(newOrder, server, newID)
+	go scripts.CreateTimelapse(newOrder, server, newID)
 }
 
 func postOrderToDB(order *order.OrderJSONType, server *ws.Server) (int, error) {

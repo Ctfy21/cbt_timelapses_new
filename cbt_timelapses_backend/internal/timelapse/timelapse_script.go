@@ -1,4 +1,4 @@
-package scripts
+package timelapse
 
 import (
 	"cbt_timelapses_backend/m/v2/configs"
@@ -35,22 +35,22 @@ func CreateTimelapse(order *order.OrderJSONType, server *ws.Server, newID int) {
 	server.WriteMessageAll(val)
 }
 
-func CreateFakeTimelapse(order *order.OrderJSONType, server *ws.Server, newID int) {
-
-	err := exec.Command("ping", "google.com").Run()
-	order.OrderJSON.Status = configs.STATUS_OK
-	if err != nil {
-		order.OrderJSON.Status = configs.STATUS_ERROR
-		log.Println(err)
-	}
-
-	val, err := order.ToJSON()
-	if err != nil {
-		log.Println("Error during JSON Order marshalling: ", err)
-		return
-	}
-
-	database.SetJSONData(server.RedisDB, "Order:"+strconv.Itoa(newID), val)
-	server.WriteMessageAll(val)
-
-}
+//func CreateFakeTimelapse(order *order.OrderJSONType, server *ws.Server, newID int) {
+//
+//	err := exec.Command("ping", "google.com").Run()
+//	order.OrderJSON.Status = configs.STATUS_OK
+//	if err != nil {
+//		order.OrderJSON.Status = configs.STATUS_ERROR
+//		log.Println(err)
+//	}
+//
+//	val, err := order.ToJSON()
+//	if err != nil {
+//		log.Println("Error during JSON Order marshalling: ", err)
+//		return
+//	}
+//
+//	database.SetJSONData(server.RedisDB, "Order:"+strconv.Itoa(newID), val)
+//	server.WriteMessageAll(val)
+//
+//}

@@ -15,7 +15,6 @@ const store = useOrderStore();
 store.bindEvents()
 
 function downloadImage(order){
-  console.log(order)
   const existingOrderIndex = store.orders.findIndex((temp) => {
     return temp.id === order.id;
   });
@@ -25,7 +24,6 @@ function downloadImage(order){
     method: 'GET',
     responseType: 'blob',
     onDownloadProgress: function (progressEvent){
-      console.log(((progressEvent.loaded / progressEvent.total) * 100).toFixed() + "%");
       store.orders[existingOrderIndex].downloaderValue = ((progressEvent.loaded / progressEvent.total) * 100).toFixed() + "%"
     }
   }).then((response) => {
@@ -51,11 +49,15 @@ function downloadImage(order){
     <form @submit.prevent="store.addNewOrder(roomValue, cameraValue, startDateValue, endDateValue)" class="row w-50 gy-4">
       <div class="input-group">
         <span class="input-group-text">Комната</span>
-        <input type="text" class="form-control input" v-model="roomValue" placeholder="Название комнаты">
+        <select class="form-select" v-model="roomValue" aria-label="Пример выбора по умолчанию">
+          <option v-for="(cameras, nameRoom) in store.folders" :key="nameRoom" :value="nameRoom">{{ nameRoom }}</option>
+        </select>
       </div>
       <div class="input-group">
         <span class="input-group-text">Камера</span>
-        <input type="text" class="form-control input" v-model="cameraValue" placeholder="Название камеры">
+        <select class="form-select" v-model="cameraValue" aria-label="Пример выбора по умолчанию">
+          <option v-for="(cameras, ) in store.folders[roomValue]" :key="cameras" :value="cameras">{{ cameras }}</option>
+        </select>
       </div>
       <div class="input-group">
         <span class="input-group-text">Дата начала</span>

@@ -5,6 +5,7 @@ import {socket} from "@/socket";
 export const useOrderStore = defineStore("orders",{
     state: () => ({
         orders: [],
+        folders: [],
     }),
 
     actions: {
@@ -14,6 +15,7 @@ export const useOrderStore = defineStore("orders",{
             }
             socket.onmessage = (event) => {
                 let json = JSON.parse(event.data)
+                console.log(json)
                 for (const [key, value] of Object.entries(json)){
                     switch (key){
                         case "Orders": {
@@ -31,6 +33,10 @@ export const useOrderStore = defineStore("orders",{
                             if (existingOrderIndex) {
                                 this.orders[existingOrderIndex] = order
                             }
+                            break
+                        }
+                        case "Folders": {
+                            this.folders = value;
                             break
                         }
                         default:

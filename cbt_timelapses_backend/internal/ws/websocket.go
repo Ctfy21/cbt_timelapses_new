@@ -53,7 +53,7 @@ func (server *Server) echo(w http.ResponseWriter, r *http.Request) {
 
 	server.clients[connection] = true // Сохраняем соединение, используя его как ключ
 
-	json := database.GetJSONArrayValuesFromKeyPattern(server.RedisDB, "Order:*")
+	json := database.GetJSONArrayValuesFromKeyPattern(server.RedisDB, "Order:*", true)
 
 	server.WriteMessage(json, connection)
 

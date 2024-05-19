@@ -16,7 +16,8 @@ type Order struct {
 }
 
 type OrdersJSONType struct {
-	OrdersJSON []string `json:"Orders"`
+	OrdersJSON []string            `json:"Orders"`
+	Folders    map[string][]string `json:"Folders"`
 }
 
 type OrderJSONType struct {

@@ -2,6 +2,7 @@ package database
 
 import (
 	"cbt_timelapses_backend/m/v2/configs"
+	"cbt_timelapses_backend/m/v2/internal/folders"
 	order "cbt_timelapses_backend/m/v2/internal/instances"
 	"context"
 	"encoding/json"
@@ -44,9 +45,15 @@ func GetIncrId(rc *redis.Client, key string) int {
 	return val
 }
 
-func GetJSONArrayValuesFromKeyPattern(rc *redis.Client, key string) []byte {
+func GetJSONArrayValuesFromKeyPattern(rc *redis.Client, key string, needFolders bool) []byte {
 
-	newOrdersJson := order.OrdersJSONType{OrdersJSON: []string{}}
+	var newOrdersJson order.OrdersJSONType
+	if needFolders {
+		jsonFolders := folders.GetScreenshotsFolders()
+		newOrdersJson = order.OrdersJSONType{OrdersJSON: []string{}, Folders: jsonFolders}
+	} else {
+		newOrdersJson = order.OrdersJSONType{OrdersJSON: []string{}}
+	}
 
 	result, err := rc.Keys(context.Background(), key).Result()
 	if err != nil {
@@ -67,9 +74,9 @@ func GetJSONArrayValuesFromKeyPattern(rc *redis.Client, key string) []byte {
 	return j
 }
 
-func FlushDB(rdb *redis.Client) {
-	err := rdb.FlushDB(context.Background()).Err()
-	if err != nil {
-		panic(err)
-	}
-}
+//func FlushDB(rdb *redis.Client) {
+//	err := rdb.FlushDB(context.Background()).Err()
+//	if err != nil {
+//		panic(err)
+//	}
+//}

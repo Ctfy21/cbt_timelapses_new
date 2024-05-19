@@ -4,7 +4,7 @@ import (
 	"cbt_timelapses_backend/m/v2/configs"
 	"cbt_timelapses_backend/m/v2/internal/database"
 	order "cbt_timelapses_backend/m/v2/internal/instances"
-	"cbt_timelapses_backend/m/v2/internal/scripts"
+	"cbt_timelapses_backend/m/v2/internal/timelapse"
 	"cbt_timelapses_backend/m/v2/internal/ws"
 	"log"
 	"strconv"
@@ -13,7 +13,6 @@ import (
 var exit = make(chan bool)
 
 func main() {
-
 	ws.CreateServer(messageHandler)
 	var _ = <-exit
 
@@ -31,7 +30,7 @@ func messageHandler(message []byte, server *ws.Server) {
 		log.Println(err)
 		return
 	}
-	go scripts.CreateTimelapse(newOrder, server, newID)
+	go timelapse.CreateTimelapse(newOrder, server, newID)
 }
 
 func postOrderToDB(order *order.OrderJSONType, server *ws.Server) (int, error) {
@@ -42,7 +41,7 @@ func postOrderToDB(order *order.OrderJSONType, server *ws.Server) (int, error) {
 		return 0, err
 	}
 	database.SetJSONData(server.RedisDB, "Order:"+strconv.Itoa(newID), val)
-	json := database.GetJSONArrayValuesFromKeyPattern(server.RedisDB, "Order:*")
+	json := database.GetJSONArrayValuesFromKeyPattern(server.RedisDB, "Order:*", false)
 	server.WriteMessageAll(json)
 	return newID, nil
 }

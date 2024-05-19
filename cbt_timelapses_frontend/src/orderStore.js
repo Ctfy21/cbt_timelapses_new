@@ -36,7 +36,9 @@ export const useOrderStore = defineStore("orders",{
                             break
                         }
                         case "Folders": {
-                            this.folders = value;
+                            if (value !== null){
+                                this.folders = value;
+                            }
                             break
                         }
                         default:

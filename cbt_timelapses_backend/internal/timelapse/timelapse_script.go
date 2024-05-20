@@ -10,7 +10,14 @@ import (
 	"strconv"
 )
 
-func CreateTimelapse(order *order.OrderJSONType, server *ws.Server, newID int) {
+var id = make(chan int, 1)
+
+func addQueue(order *order.OrderJSONType, server *ws.Server, newID int) {
+	id <- newID
+	go CreateTimelapse(order, server, id)
+}
+
+func CreateTimelapse(order *order.OrderJSONType, server *ws.Server, id chan int) {
 	err := exec.Command(configs.DIRECTORY_FOLDER_SCRIPT,
 		"--dir",
 		configs.SCREENSHOTS_FOLDER+"/"+order.OrderJSON.Room+"/"+order.OrderJSON.Camera,
@@ -31,7 +38,7 @@ func CreateTimelapse(order *order.OrderJSONType, server *ws.Server, newID int) {
 		return
 	}
 
-	database.SetJSONData(server.RedisDB, "Order:"+strconv.Itoa(newID), val)
+	database.SetJSONData(server.RedisDB, "Order:"+strconv.Itoa(<-id), val)
 	server.WriteMessageAll(val)
 }
 

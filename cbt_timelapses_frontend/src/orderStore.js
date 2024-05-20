@@ -6,6 +6,7 @@ export const useOrderStore = defineStore("orders",{
     state: () => ({
         orders: [],
         folders: [],
+        error: ""
     }),
 
     actions: {
@@ -48,9 +49,15 @@ export const useOrderStore = defineStore("orders",{
             }
         },
         addNewOrder(room, camera, startDate, endDate){
+            this.error = ''
             let new_order = Order.createOrder(room, camera, startDate, endDate)
-            if(socket.readyState === WebSocket.OPEN){
-                socket.send(Order.serialize(new_order))
+            if(new_order !== undefined){
+                if(socket.readyState === WebSocket.OPEN){
+                    socket.send(Order.serialize(new_order))
+                }
+            }
+            else{
+                this.error = "Неправильно указана дата и время или неправильно указан период"
             }
         },
     }

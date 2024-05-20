@@ -41,6 +41,9 @@ export class Order {
 
     static createOrder(room, camera, startDate, endDate) {
         const new_order = new this(room, camera, startDate, endDate, Order.status_waiting)
+        if(endDate <= startDate){
+            return undefined
+        }
         console.log(this.serialize(new_order))
         return new_order
     }

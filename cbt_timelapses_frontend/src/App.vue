@@ -41,6 +41,10 @@ store.bindEvents()
         <button type="submit" class="btn btn-primary" > Создать </button>
       </div>
     </form>
+    <div class="d-flex justify-content-center mt-2">
+        <p class="text-danger" v-if="store.error != ''">{{ store.error }}</p>
+    </div>
+
 
     <hr class="row mt-5">
 
@@ -84,13 +88,10 @@ store.bindEvents()
             <BIconCheckCircleFill class="text-success" v-else-if="order.status === 200"></BIconCheckCircleFill>
             <BIconXCircleFill class="text-danger" v-else></BIconXCircleFill>
           </div>
-          <div v-if="order.downloaderValue === ''" class="p-1 d-flex col border align-items-center justify-content-center">
+          <div class="p-1 d-flex col border align-items-center justify-content-center">
             <a :href="'http://192.168.42.119:5000/download/' + order.room + '/' + order.camera + '/timelapses/output_' + order.startDate.toISOString().slice(0,10) + '_00-00-00_to_' + order.endDate.toISOString().slice(0,10) + '_00-00-00.mp4'" v-if="order.status === 200" download>
               <BIconDownload> Скачать </BIconDownload>
             </a>
-          </div>
-          <div v-else class="p-1 d-flex col border align-items-center justify-content-center">
-            <label>{{ order.downloaderValue }}</label>
           </div>
         </li>
       </ul>

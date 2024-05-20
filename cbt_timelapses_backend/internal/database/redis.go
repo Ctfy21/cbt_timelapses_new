@@ -6,8 +6,9 @@ import (
 	order "cbt_timelapses_backend/m/v2/internal/instances"
 	"context"
 	"encoding/json"
-	"github.com/redis/go-redis/v9"
 	"log"
+
+	"github.com/redis/go-redis/v9"
 )
 
 func StartClient() *redis.Client {
@@ -74,9 +75,9 @@ func GetJSONArrayValuesFromKeyPattern(rc *redis.Client, key string, needFolders 
 	return j
 }
 
-//func FlushDB(rdb *redis.Client) {
-//	err := rdb.FlushDB(context.Background()).Err()
-//	if err != nil {
-//		panic(err)
-//	}
-//}
+// func FlushDB(rdb *redis.Client) {
+// 	err := rdb.FlushDB(context.Background()).Err()
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// }

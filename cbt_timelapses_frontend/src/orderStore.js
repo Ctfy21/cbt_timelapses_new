@@ -20,8 +20,8 @@ export const useOrderStore = defineStore("orders",{
                     switch (key){
                         case "Orders": {
                             const ordersArray = [...Order.generateOrder(value)]
-                            console.log(ordersArray.sort((a,b) => a.id - b.id ))
-                            this.orders = ordersArray.sort((a,b) => a.id - b.id )
+                            console.log(ordersArray.sort((a,b) => b.id - a.id ))
+                            this.orders = ordersArray.sort((a,b) => b.id - a.id )
                             break
                         }
                         case "Order": {
@@ -30,7 +30,7 @@ export const useOrderStore = defineStore("orders",{
                             const existingOrderIndex = this.orders.findIndex((temp) => {
                                 return temp.id === order.id;
                             });
-                            if (existingOrderIndex) {
+                            if (existingOrderIndex != -1) {
                                 this.orders[existingOrderIndex] = order
                             }
                             break

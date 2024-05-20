@@ -3,11 +3,12 @@ package ws
 import (
 	"cbt_timelapses_backend/m/v2/configs"
 	"cbt_timelapses_backend/m/v2/internal/database"
+	"log"
+	"net/http"
+
 	"github.com/gorilla/websocket"
 	"github.com/redis/go-redis/v9"
 	cors "github.com/rs/cors"
-	"log"
-	"net/http"
 )
 
 var upgrader = websocket.Upgrader{
@@ -26,7 +27,7 @@ func CreateServer(handleMessage func(message []byte, server *Server)) *Server {
 
 	rdb := database.StartClient()
 
-	//database.FlushDB(rdb)
+	// database.FlushDB(rdb)
 
 	server := Server{
 		make(map[*websocket.Conn]bool),

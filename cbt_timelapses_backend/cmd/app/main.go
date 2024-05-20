@@ -12,9 +12,11 @@ import (
 
 var exit = make(chan bool)
 var ids = make(chan int, configs.MAX_TIMELAPSE_ORDER)
+var orders = make(chan *order.OrderJSONType, configs.MAX_TIMELAPSE_ORDER)
 
 func main() {
-	ws.CreateServer(messageHandler)
+	server := ws.CreateServer(messageHandler)
+	go timelapse.CreateQueue(orders, server, ids)
 	var _ = <-exit
 
 }
@@ -32,7 +34,7 @@ func messageHandler(message []byte, server *ws.Server) {
 		return
 	}
 	ids <- newID
-	go timelapse.CreateTimelapse(newOrder, server, ids)
+	orders <- newOrder
 }
 
 func postOrderToDB(order *order.OrderJSONType, server *ws.Server) (int, error) {

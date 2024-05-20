@@ -1,0 +1,8 @@
+[Unit]
+Description=Start Redis DB CBT Timelpases
+After=multi-user.target
+[Service]
+Type=idle
+ExecStart=sh /home/blunder/bin/cbt_timelapses_new/startserver.sh
+[Install]
+WantedBy=multi-user.target

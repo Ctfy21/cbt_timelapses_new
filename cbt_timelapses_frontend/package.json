@@ -1,4 +1,3 @@
-
 {
   "browser": {
     "fs": false,
@@ -18,12 +17,14 @@
     "@popperjs/core": "^2.11.8",
     "@vue/cli": "^5.0.8",
     "axios": "^1.6.8",
+    "axios-retry": "^4.2.0",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "bootstrap-icons-vue": "^1.11.3",
     "bootstrap-vue": "^2.23.1",
     "core-js": "^3.8.3",
     "pinia": "^2.1.7",
+    "serve": "^14.2.3",
     "socket.io-client": "^4.7.5",
     "v-calendar": "^3.1.2",
     "vue": "^3.2.26"

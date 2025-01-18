@@ -1,9 +1,4 @@
 {
-  "browser": {
-    "fs": false,
-    "path": false,
-    "os": false
-  },
   "name": "timelapses-front",
   "version": "0.1.0",
   "private": true,
@@ -23,6 +18,9 @@
     "bootstrap-icons-vue": "^1.11.3",
     "bootstrap-vue": "^2.23.1",
     "core-js": "^3.8.3",
+    "crypto-browserify": "^3.12.1",
+    "dotenv": "^16.4.7",
+    "node-polyfill-webpack-plugin": "^4.1.0",
     "pinia": "^2.1.7",
     "serve": "^14.2.3",
     "socket.io-client": "^4.7.5",

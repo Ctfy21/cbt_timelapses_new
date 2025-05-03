@@ -2,7 +2,7 @@ package configs
 
 import "time"
 
-const DIRECTORY_FOLDER_SCRIPT = "/home/create_video.sh"
+const DIRECTORY_FOLDER_SCRIPT = "/home/blunder/bin/create_video.sh"
 const SCREENSHOTS_FOLDER = "/mnt/seefetch"
 const ORDER_TTL = 7 * 24 * time.Hour
 const PORT_SERVER = ":5000"

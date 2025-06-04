@@ -1,5 +1,6 @@
 // "undefined" means the URL will be computed from the `window.location` object
-const URL =
-    process.env.NODE_ENV === "production" ? "ws://"+process.env.VUE_APP_PATH_START+":5000/ws" : "ws://"+process.env.VUE_APP_PATH_START+":5000/ws";
+
+const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+const URL = protocol + '//' + window.location.hostname + ":" + window.location.port +'/ws';
 
 export const socket = new WebSocket(URL);

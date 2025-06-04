@@ -10,5 +10,4 @@ watch -n 86400 mount.cifs $SAMBA_IP /mnt/seefetch -o user=sambauser,pass=1111111
 touch /home/blunder/bin/cbt_timelapses_new/cbt_timelapses_frontend/.env 
 echo "VUE_APP_PATH_START=${HOST_IP}" >> /home/blunder/bin/cbt_timelapses_new/cbt_timelapses_frontend/.env
 
-/home/blunder/bin/cbt_timelapses_new/cbt_timelapses_backend/main &
-node /home/blunder/bin/cbt_timelapses_new/cbt_timelapses_frontend/server
+/home/blunder/bin/cbt_timelapses_new/cbt_timelapses_backend/main

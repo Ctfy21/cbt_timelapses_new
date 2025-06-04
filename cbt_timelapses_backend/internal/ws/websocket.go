@@ -37,6 +37,9 @@ func CreateServer(handleMessage func(message []byte, server *Server)) *Server {
 
 	http.HandleFunc("/ws", server.echo)
 
+	fs := http.FileServer(http.Dir("/home/blunder/bin/cbt_timelapses_new/cbt_timelapses_frontend/dist"))
+	http.Handle("/", fs)
+	
 	fileServer := http.FileServer(http.Dir(configs.SCREENSHOTS_FOLDER))
 	fileServerWithCors := cors.Default().Handler(fileServer)
 	http.Handle("/download/", http.StripPrefix("/download/", fileServerWithCors))

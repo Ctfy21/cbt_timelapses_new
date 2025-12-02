@@ -149,7 +149,7 @@ const saveSettings = () => {
               <BIconXCircleFill class="text-danger" v-else></BIconXCircleFill>
             </div>
             <div class="p-1 d-flex col border align-items-center justify-content-center">
-              <a :href="protocol + '//'+ hostname + ':' + port + '/download/' + order.room + '/' + order.camera + '/timelapses/' + 'output_' + order.startDate.toISOString().slice(0,10) + '_00-00-00_to_' + order.endDate.toISOString().slice(0,10) + '_00-00-00.mp4'" v-if="order.status === 200" download>
+              <a :href="protocol + '//'+ hostname + ':' + port + '/download/' + order.room + '/' + order.camera + '/timelapses/' + order.camera + '_' + order.startDate.toISOString().slice(0,10) + '_00-00-00_to_' + order.endDate.toISOString().slice(0,10) + '_00-00-00.mp4'" v-if="order.status === 200" download>
                 <BIconDownload> Скачать </BIconDownload>
               </a>
             </div>

@@ -19,18 +19,28 @@ func CreateQueue(newOrder chan *order.OrderJSONType, server *ws.Server, newID ch
 }
 
 func CreateTimelapse(order *order.OrderJSONType, server *ws.Server, id int) {
-	err := exec.Command(configs.DIRECTORY_FOLDER_SCRIPT,
-		"--dir",
-		configs.SCREENSHOTS_FOLDER+"/"+order.OrderJSON.Room+"/"+order.OrderJSON.Camera,
-		"--start",
-		order.OrderJSON.StartDate,
-		"--end",
-		order.OrderJSON.EndDate).Run()
+	scriptPath := configs.DIRECTORY_FOLDER_SCRIPT
+	dirPath := configs.SCREENSHOTS_FOLDER + "/" + order.OrderJSON.Room + "/" + order.OrderJSON.Camera
+	
+	log.Printf("=== Creating timelapse ID:%d, Script:%s, Dir:%s, Start:%s, End:%s\n",
+		id, scriptPath, dirPath, order.OrderJSON.StartDate, order.OrderJSON.EndDate)
+	
+	cmd := exec.Command(scriptPath,
+		"--dir", dirPath,
+		"--start", order.OrderJSON.StartDate,
+		"--end", order.OrderJSON.EndDate)
+	
+	// Захватываем stdout и stderr
+	output, err := cmd.CombinedOutput()
+	
+	log.Printf("=== Script output for ID:%d:\n%s\n", id, string(output))
 
 	order.OrderJSON.Status = configs.STATUS_OK
 	if err != nil {
 		order.OrderJSON.Status = configs.STATUS_ERROR
-		log.Println(err)
+		log.Printf("=== ERROR creating timelapse ID:%d: %v\n", id, err)
+	} else {
+		log.Printf("=== SUCCESS creating timelapse ID:%d\n", id)
 	}
 
 	val, err := order.ToJSON()
@@ -40,7 +50,10 @@ func CreateTimelapse(order *order.OrderJSONType, server *ws.Server, id int) {
 	}
 
 	database.SetJSONData(server.DB, "Order:"+strconv.Itoa(id), val)
-	server.WriteMessageAll(val)
+	
+	// Отправляем полный список заказов всем клиентам
+	json := database.GetJSONArrayValuesFromKeyPattern(server.DB, "Order:*", false)
+	server.WriteMessageAll(json)
 }
 
 //func CreateFakeTimelapse(order *order.OrderJSONType, server *ws.Server, newID int) {

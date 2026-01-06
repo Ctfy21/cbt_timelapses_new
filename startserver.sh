@@ -5,7 +5,7 @@ export LC_ALL=C
 export LANG=C
 
 # Конфигурация SAMBA
-SAMBA_IP="//192.168.44.5/snapshots"
+SAMBA_IP="//192.168.50.5/snapshots"
 HOST_IP=$(hostname -I | awk '{print $1}')
 
 # Функция для логирования
@@ -24,7 +24,8 @@ monitor_samba_mount() {
             # Размонтирование на случай зависшего монтирования
             sudo umount -l /mnt/seefetch 2>/dev/null
             sleep 1
-            sudo mount.cifs $SAMBA_IP /mnt/seefetch -o user=sambauser,pass=111111111
+            # Монтируем с правами на запись для текущего пользователя
+            sudo mount.cifs $SAMBA_IP /mnt/seefetch -o user=sambauser,pass=111111111,uid=$(id -u),gid=$(id -g),file_mode=0777,dir_mode=0777
             
             if [ $? -eq 0 ]; then
                 log "SAMBA успешно смонтирована."
@@ -57,18 +58,23 @@ cleanup() {
 # Установка обработчика сигналов
 trap cleanup SIGINT SIGTERM
 
-# Сборка Backend перед запуском
-log "Сборка Backend..."
+# Проверка сборки Backend
+log "Проверка Backend..."
 cd /home/blunder/bin/cbt_timelapses_new/cbt_timelapses_backend
-go build -o main cmd/app/main.go
-if [ $? -ne 0 ]; then
-    log "ОШИБКА: Не удалось собрать Backend"
-    exit 1
+if [ ! -f "main" ]; then
+    log "Сборка Backend..."
+    go build -o main cmd/app/main.go
+    if [ $? -ne 0 ]; then
+        log "ОШИБКА: Не удалось собрать Backend"
+        exit 1
+    fi
+else
+    log "Backend уже собран"
 fi
 
 # Запуск Backend (Go сервер на порту 5000 с SQLite)
 log "Запуск Backend сервера..."
-./main &
+./main >> /tmp/backend.log 2>&1 &
 BACKEND_PID=$!
 
 if kill -0 $BACKEND_PID 2>/dev/null; then

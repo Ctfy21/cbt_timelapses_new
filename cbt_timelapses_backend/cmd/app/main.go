@@ -38,14 +38,14 @@ func messageHandler(message []byte, server *ws.Server) {
 }
 
 func postOrderToDB(order *order.OrderJSONType, server *ws.Server) (int, error) {
-	newID := database.GetIncrId(server.RedisDB, "OrderID")
+	newID := database.GetIncrId(server.DB, "OrderID")
 	order.OrderJSON.Id = newID
 	val, err := order.ToJSON()
 	if err != nil {
 		return 0, err
 	}
-	database.SetJSONData(server.RedisDB, "Order:"+strconv.Itoa(newID), val)
-	json := database.GetJSONArrayValuesFromKeyPattern(server.RedisDB, "Order:*", false)
+	database.SetJSONData(server.DB, "Order:"+strconv.Itoa(newID), val)
+	json := database.GetJSONArrayValuesFromKeyPattern(server.DB, "Order:*", false)
 	server.WriteMessageAll(json)
 	return newID, nil
 }

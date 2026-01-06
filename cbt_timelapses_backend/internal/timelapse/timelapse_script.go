@@ -39,7 +39,7 @@ func CreateTimelapse(order *order.OrderJSONType, server *ws.Server, id int) {
 		return
 	}
 
-	database.SetJSONData(server.RedisDB, "Order:"+strconv.Itoa(id), val)
+	database.SetJSONData(server.DB, "Order:"+strconv.Itoa(id), val)
 	server.WriteMessageAll(val)
 }
 

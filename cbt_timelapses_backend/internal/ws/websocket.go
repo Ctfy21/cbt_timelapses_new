@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
-	"github.com/redis/go-redis/v9"
 	cors "github.com/rs/cors"
 )
 
@@ -20,19 +19,17 @@ var upgrader = websocket.Upgrader{
 type Server struct {
 	clients       map[*websocket.Conn]bool
 	handleMessage func(message []byte, server *Server) // хандлер новых сообщений
-	RedisDB       *redis.Client
+	DB            *database.DB
 }
 
 func CreateServer(handleMessage func(message []byte, server *Server)) *Server {
 
-	rdb := database.StartClient()
-
-	// database.FlushDB(rdb)
+	db := database.StartClient()
 
 	server := Server{
 		make(map[*websocket.Conn]bool),
 		handleMessage,
-		rdb,
+		db,
 	}
 
 	http.HandleFunc("/ws", server.echo)
@@ -58,7 +55,7 @@ func (server *Server) echo(w http.ResponseWriter, r *http.Request) {
 
 	server.clients[connection] = true // Сохраняем соединение, используя его как ключ
 
-	json := database.GetJSONArrayValuesFromKeyPattern(server.RedisDB, "Order:*", true)
+	json := database.GetJSONArrayValuesFromKeyPattern(server.DB, "Order:*", true)
 
 	server.WriteMessage(json, connection)
 
